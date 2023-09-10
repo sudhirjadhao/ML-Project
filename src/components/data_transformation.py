@@ -14,8 +14,9 @@ import os
 
 from src.utils import save_object
 
+@dataclass
 class DataTransfromationConfig:
-      preprocessor_obj_file_path=os.path.join('artifacts', "proprocessor.pk1")
+      preprocessor_obj_file_path=os.path.join('artifacts',"proprocessor.pkl")
 
 
 class DataTransformation:
@@ -29,7 +30,7 @@ class DataTransformation:
             try:
                   numerical_columns=["writing_score","reading_score"]
                   categorical_columns=["gender","race_ethnicity","parental_level_of_education","lunch",
-                                       "test_preparation_course"]
+                                       "test_preparation_course",]
                   num_pipeline=Pipeline(
                         steps=[
                               ("imputer",SimpleImputer(strategy="median")),
@@ -40,12 +41,12 @@ class DataTransformation:
                         steps=[
                               ("imputer",SimpleImputer(strategy="most_frequent")),
                               ("one_hot_encoder",OneHotEncoder()),
-                              ("scalar",StandardScaler(with_mean=False))
+                              ("scaler",StandardScaler(with_mean=False))
                         ]
                   )
-                  logging.info("Numberical columns standar scaling completed")
+                  logging.info(f"Numberical columns standar scaling completed:{numerical_columns}")
 
-                  logging.info("Categoricl columns encdoing completed")
+                  logging.info(f"Categorical columns encdoing completed: {categorical_columns}")
 
                   preprocessor = ColumnTransformer(
                         [
@@ -66,7 +67,7 @@ class DataTransformation:
                   train_df=pd.read_csv(train_path)
                   test_df=pd.read_csv(test_path)
 
-                  logging.info("read train and test data completed")
+                  logging.info("Read train and test data completed")
 
                   logging.info("Obtaining preprocessing object")
 
@@ -89,7 +90,7 @@ class DataTransformation:
                   train_arr = np.c_[input_feature_train_arr,np.array(target_feature_train_df)]
                   test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
 
-                  logging.info(f"Saved preprocesing object.")
+                  logging.info(f"Saved preprocessing object.")
 
                   save_object(
                         file_path=self.data_transformation_config.preprocessor_obj_file_path,
